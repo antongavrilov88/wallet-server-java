@@ -13,6 +13,6 @@ public class Index extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();
-        writer.write("Method is working. Anton, give my f*cking request. * = u");
+        writer.write("Сколько можно?");
     }
 }
