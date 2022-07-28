@@ -1,19 +1,49 @@
 package model;
 
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
-    @Column(name = "pk_users_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String email;
-    private String password;
+    private String pass;
+    @Column(name = "is_admin")
+    private boolean isAdmin = false;
 
-    public User() {}
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 
 
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public User(String email, String password) {
+        this.email = email;
+        this.pass = password;
+    }
+
+    public User() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return pass;
+    }
 }
