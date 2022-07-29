@@ -15,12 +15,21 @@ public class Token {
     @Column(name = "users_id")
     private int usersId;
 
+    @Column(name = "is_active")
+    private boolean isActive;
+
     public Token() {
     }
 
     public Token(String userToken, int usersId) {
         this.usersId = usersId;
         this.userToken = userToken;
+    }
+
+    public Token(String userToken, int usersId, boolean isActive) {
+        this.userToken = userToken;
+        this.usersId = usersId;
+        this.isActive = isActive;
     }
 
     public int getId() {

@@ -9,7 +9,7 @@ public class UserDAOServiceLogout extends UserDAOService {
     }
 
     @Override
-    void validate(String email) throws EmailConflictException {
+    void validateEmail(String email) throws EmailConflictException {
 
     }
 }

@@ -14,7 +14,6 @@ import java.io.Serializable;
 public class UserDAO {
 
     public User findByEmail(String email) {
-
         Query<User> query = HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("from User x where x.email=:email", User.class);
         query.setParameter("email", email);
         return query.uniqueResult();
