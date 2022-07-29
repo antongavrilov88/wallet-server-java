@@ -2,6 +2,7 @@ package service;
 
 import DAO.UserDAO;
 import exceptions.EmailConflictException;
+import exceptions.EmailNotFoundException;
 import model.User;
 
 public abstract class UserDAOService {
@@ -32,5 +33,5 @@ public abstract class UserDAOService {
         userDAO.update(user);
     }
 
-    abstract void validate(String email) throws EmailConflictException;
+    abstract void validateEmail(String email) throws EmailConflictException, EmailNotFoundException;
 }

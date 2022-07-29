@@ -15,7 +15,7 @@ public class UserDAOServiceRegistr extends UserDAOService {
     }
 
     public String register(String email, String password) throws EmailConflictException, DAOException {
-        validate(email);
+        validateEmail(email);
         User user = new User(email, password);
         Token token;
         if (userDAORegistr.save(user) != null) {
@@ -33,7 +33,8 @@ public class UserDAOServiceRegistr extends UserDAOService {
         return jsonString;
     }
 
-    void validate(String email) throws EmailConflictException {
+    @Override
+    void validateEmail(String email) throws EmailConflictException {
         if (findUserByEmail(email) != null) {
             throw new EmailConflictException();
         }

@@ -1,8 +1,6 @@
 package model;
 
 
-import org.hibernate.annotations.NaturalId;
-
 import javax.persistence.*;
 
 @Entity
@@ -43,7 +41,7 @@ public class User {
         return email;
     }
 
-    public String getPassword() {
+    public String getPass() {
         return pass;
     }
 }
