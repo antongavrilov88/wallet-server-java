@@ -3,6 +3,7 @@ package DAO;
 import model.Token;
 import model.User;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -26,20 +27,30 @@ public class UserDAO {
 
 
     public Serializable save(User user) {
-        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        Transaction tx1 = session.beginTransaction();
-        Serializable userCreated = session.save(user);
-        tx1.commit();
-        session.close();
+        Serializable userCreated = null;
+        try {
+            Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+            Transaction tx1 = session.beginTransaction();
+            userCreated = session.save(user);
+            tx1.commit();
+            session.close();
+        } catch (HibernateException e) {
+            return null;
+        }
         return userCreated;
     }
 
     public Serializable save(Token token) {
-        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        Transaction tx1 = session.beginTransaction();
-        Serializable tokenCreated = session.save(token);
-        tx1.commit();
-        session.close();
+        Serializable tokenCreated = null;
+        try {
+            Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+            Transaction tx1 = session.beginTransaction();
+            tokenCreated = session.save(token);
+            tx1.commit();
+            session.close();
+        } catch (HibernateException e) {
+            return null;
+        }
         return tokenCreated;
     }
 
@@ -56,6 +67,14 @@ public class UserDAO {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
         session.update(user);
+        tx1.commit();
+        session.close();
+    }
+
+    public void update(Token token) {
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        Transaction tx1 = session.beginTransaction();
+        session.update(token);
         tx1.commit();
         session.close();
     }

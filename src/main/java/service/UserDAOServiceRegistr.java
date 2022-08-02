@@ -21,7 +21,7 @@ public class UserDAOServiceRegistr extends UserDAOService {
         if (userDAORegistr.save(user) != null) {
             int hashCodeToken = email.hashCode() + password.hashCode();
             int usersId = user.getId();
-            token = new Token(String.valueOf(hashCodeToken), usersId);
+            token = new Token(String.valueOf(hashCodeToken), usersId, true);
             if (userDAORegistr.save(token) == null) {
                 userDAORegistr.delete(user);
                 throw new DAOException();
