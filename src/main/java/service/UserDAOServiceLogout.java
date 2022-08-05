@@ -1,13 +1,8 @@
 package service;
 
-import DAO.UserDAO;
-import DAO.UserDAOLogout;
-import exceptions.DAOException;
-import exceptions.EmailConflictException;
+import model.DAO.UserDAOLogout;
 import exceptions.NotAuthorizedEception;
 import model.Token;
-import model.User;
-import utils.RequestType;
 
 public class UserDAOServiceLogout extends UserDAOService {
 

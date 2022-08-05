@@ -1,6 +1,6 @@
 package service;
 
-import DAO.UserDAORegistr;
+import model.DAO.UserDAORegistr;
 import exceptions.DAOException;
 import exceptions.EmailConflictException;
 import model.Token;
@@ -33,7 +33,6 @@ public class UserDAOServiceRegistr extends UserDAOService {
         return jsonString;
     }
 
-    @Override
     void validateEmail(String email) throws EmailConflictException {
         if (findUserByEmail(email) != null) {
             throw new EmailConflictException();
