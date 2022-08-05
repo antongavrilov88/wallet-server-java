@@ -39,4 +39,12 @@ public class Token {
     public String getUserToken() {
         return userToken;
     }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }

@@ -1,3 +1,5 @@
+package RESTApi;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,28 +19,22 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @WebServlet("/auth/login")
-public class LoginRESTApi extends HttpServlet {
+public class LoginRESTApi extends MyHttpServlet {
 
     UserDAOServiceLogin userDAOService = new UserDAOServiceLogin();
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        BufferedReader reader = req.getReader();
-        StringBuffer sb = new StringBuffer();
-        while (reader.ready()) {
-            sb.append(reader.readLine());
-        }
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode node = null;
         try {
-            node = mapper.readValue(sb.toString(), JsonNode.class);
+            node = getJson(req);
         } catch (JsonProcessingException e) {
             resp.setStatus(400);
             writer.write("Wrong API, not a JSON");
         }
-        String email = node.get("email").asText();
-        String password = node.get("password").asText();
+        String email = node.get("data").get(0).get("attributes").get(0).get("email").asText();
+        String password = node.get("data").get(0).get("attributes").get(0).get("password").asText();
         try {
             resp.setStatus(201);
             writer.write(userDAOService.login(email, password));
