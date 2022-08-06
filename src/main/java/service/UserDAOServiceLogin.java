@@ -1,8 +1,7 @@
 package service;
 
-import DAO.UserDAOLogin;
+import model.DAO.UserDAOLogin;
 import exceptions.DAOException;
-import exceptions.EmailConflictException;
 import exceptions.EmailNotFoundException;
 import exceptions.WrongPasswordException;
 import model.Token;
@@ -15,7 +14,7 @@ public class UserDAOServiceLogin extends UserDAOService{
 
     }
 
-    @Override
+
     void validateEmail(String email) throws EmailNotFoundException {
         if (userDAOLogin.findByEmail(email) == null) {
             throw new EmailNotFoundException();
