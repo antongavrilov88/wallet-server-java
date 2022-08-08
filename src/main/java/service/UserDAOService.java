@@ -1,18 +1,16 @@
 package service;
 
-import model.DAO.UserDAO;
-import model.Token;
 import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import repository.UserRepository;
+import model.repository.UserRepository;
 
 import java.util.List;
 
-@Service
+
 public abstract class UserDAOService {
-    
-    @Autowired
+
     private UserRepository userRepository;
     protected static final String jsonReturnString = "{ \"type\": \"%s\", \"data\": { \"id\": %d, \"attributes\": { \"email\": \"%s\", \"token\": \"%s\", \"is_admin\": %s}}}";
 

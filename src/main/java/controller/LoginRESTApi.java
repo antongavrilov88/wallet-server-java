@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @WebServlet("/auth/login")
-public class LoginRESTApi extends MyHttpServlet {
+public class LoginRESTApi extends RESTApi {
 
     UserDAOServiceLogin userDAOService = new UserDAOServiceLogin();
 

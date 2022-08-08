@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @WebServlet("/auth/logout")
-public class LogoutRESTApi extends MyHttpServlet {
+public class LogoutRESTApi extends RESTApi {
     UserDAOServiceLogout userDAOService = new UserDAOServiceLogout();
 
 

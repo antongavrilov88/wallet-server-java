@@ -1,41 +1,48 @@
 package service;
 
-import model.DAO.UserDAORegistr;
 import exceptions.DAOException;
 import exceptions.EmailConflictException;
+import model.DAO.TokenDAO;
+import model.DAO.UserDAO;
 import model.Token;
 import model.User;
-import utils.RequestType;
+import model.repository.TokenRepository;
+import model.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
-public class UserDAOServiceRegistr extends UserDAOService {
-    private UserDAORegistr userDAORegistr;
+@Component
+public class UserDAOServiceRegistr {
+    private final UserDAO userDAO;
+    private final TokenDAO tokenDAO;
 
-    public UserDAOServiceRegistr() {
-        this.userDAORegistr = new UserDAORegistr();
+    private final UserModelAssembler assembler;
+
+    public UserDAOServiceRegistr(UserDAO userDAO, TokenDAO tokenDAO) {
+        this.assembler = new UserModelAssembler();
+        this.userDAO = userDAO;
+        this.tokenDAO = tokenDAO;
     }
 
-    public String register(String email, String password) throws EmailConflictException, DAOException {
-        validateEmail(email);
-        User user = new User(email, password);
+    public ResponseEntity<?> register(User user) throws EmailConflictException, DAOException {
+        validateEmail(user.getEmail());
         Token token;
-        if (userDAORegistr.save(user) != null) {
-            int hashCodeToken = email.hashCode() + password.hashCode();
-            int usersId = user.getId();
-            token = new Token(String.valueOf(hashCodeToken), usersId, true);
-            if (userDAORegistr.save(token) == null) {
-                userDAORegistr.delete(user);
+        User savedUser;
+        if ((savedUser = userDAO.save(user)) != null) {
+            int hashCodeToken = user.getEmail().hashCode() + user.getPass().hashCode();
+            int userId = savedUser.getId();
+            token = new Token(String.valueOf(hashCodeToken), userId, true);
+            if (tokenDAO.save(token) == null) {
+                userDAO.delete(user);
                 throw new DAOException();
             }
         } else {
             throw new DAOException();
         }
-        String jsonString = String.format(UserDAOService.jsonReturnString, RequestType.AUTH, user.getId(), email, token.getUserToken(), user.isAdmin());
-        return jsonString;
+        return null;
     }
 
     void validateEmail(String email) throws EmailConflictException {
-        if (findUserByEmail(email) != null) {
-            throw new EmailConflictException();
-        }
+        //TODO validateEmail
     }
 }

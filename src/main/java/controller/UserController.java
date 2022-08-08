@@ -1,21 +1,27 @@
 package controller;
 
 import model.User;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import service.UserDAOServiceRegistr;
 
 import java.io.IOException;
 
 @RestController
-public class Controller {
+public class UserController {
+    final
+    RegistrRESTApi registrRESTApi;
 
-    UserDAOServiceRegistr userDAOService = new UserDAOServiceRegistr();
+    public UserController(RegistrRESTApi registrRESTApi) {
+        this.registrRESTApi = registrRESTApi;
+    }
 
-    @PostMapping("/auth/registration")
-    public String register(@RequestBody String email, @RequestBody String password) throws IOException {
-        return RegistrRESTApi.register(email, password);
+
+    @PostMapping(value = "/auth/registration", consumes = {"application/json"})
+    ResponseEntity<?> register(@RequestBody User user) throws IOException {
+
+        return registrRESTApi.register(user);
     }
 
     @GetMapping("/")

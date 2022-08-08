@@ -1,11 +1,17 @@
 package model;
 
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
+@Component
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -43,5 +49,17 @@ public class User {
 
     public String getPass() {
         return pass;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 }
