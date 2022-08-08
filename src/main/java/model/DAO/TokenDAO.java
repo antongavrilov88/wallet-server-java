@@ -5,7 +5,9 @@ import model.repository.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class TokenDAO {
@@ -16,7 +18,6 @@ public class TokenDAO {
     }
 
     public Token save(Token token) {
-        //TODO save
         try {
             return repository.save(token);
         } catch (Exception e) {
@@ -25,21 +26,19 @@ public class TokenDAO {
         }
     }
 
-    public void delete() {
-        //TODO delete
+    public void delete(Token token) {
+        repository.delete(token);
     }
 
-    public void update() {
+    public void update(Token token) {
         //TODO update
     }
 
-    public Token findById(Long id) {
-        //TODO findById
-        return null;
+    public Optional<Token> findById(Long id) {
+        return repository.findById(id);
     }
 
     public List<Token> findAll() {
-        //TODO findAll
-        return null;
+        return repository.findAll();
     }
 }

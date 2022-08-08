@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserDAO {
@@ -24,9 +25,8 @@ public class UserDAO {
     }
 
 
-    public User findById(int id) {
-        //TODO findById
-        return null;
+    public Optional<User> findById(long id) {
+        return repository.findById(id);
     }
 
 
@@ -43,7 +43,6 @@ public class UserDAO {
 
     public void delete(User user) {
         repository.delete(user);
-        //TODO delete
     }
 
 
@@ -51,8 +50,7 @@ public class UserDAO {
         //TODO update
     }
 
-    public List<User> getAll() {
-        //TODO getAll
-        return null;
+    public List<User> findAll() {
+        return repository.findAll();
     }
 }

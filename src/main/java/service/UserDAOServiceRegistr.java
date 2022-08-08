@@ -11,6 +11,8 @@ import model.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class UserDAOServiceRegistr {
     private final UserDAO userDAO;
@@ -43,6 +45,11 @@ public class UserDAOServiceRegistr {
     }
 
     void validateEmail(String email) throws EmailConflictException {
-        //TODO validateEmail
+        List<User> allUsers = userDAO.findAll();
+        for (User user : allUsers) {
+            if (user.getEmail().equals(email)) {
+                throw new EmailConflictException();
+            }
+        }
     }
 }
