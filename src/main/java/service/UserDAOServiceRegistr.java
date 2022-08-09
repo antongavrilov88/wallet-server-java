@@ -2,10 +2,12 @@ package service;
 
 import exceptions.DAOException;
 import exceptions.EmailConflictException;
+import exceptions.NotValidEmailException;
 import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
 import model.Token;
 import model.User;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,9 @@ public class UserDAOServiceRegistr extends UserDAOService {
         super(userDAO, tokenDAO, assembler);
     }
 
-    public ResponseEntity<?> register(User user) throws EmailConflictException, DAOException {
+    public ResponseEntity<?> register(User user) throws EmailConflictException, DAOException, NotValidEmailException {
         validateEmail(user.getEmail());
+        checkUniqueEmail(user.getEmail());
         Token token;
         User savedUser;
         if ((savedUser = userDAO.save(user)) != null) {
@@ -41,12 +44,18 @@ public class UserDAOServiceRegistr extends UserDAOService {
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
     }
 
-    void validateEmail(String email) throws EmailConflictException {
+    void checkUniqueEmail(String email) throws EmailConflictException {
         List<User> allUsers = userDAO.findAll();
         for (User user : allUsers) {
             if (user.getEmail().equals(email)) {
                 throw new EmailConflictException();
             }
+        }
+    }
+
+    void validateEmail(String email) throws NotValidEmailException {
+        if (!EmailValidator.getInstance().isValid(email)) {
+            throw new NotValidEmailException();
         }
     }
 }

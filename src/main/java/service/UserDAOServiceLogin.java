@@ -25,7 +25,7 @@ public class UserDAOServiceLogin extends UserDAOService{
     }
 
     public String login(String email, String password) throws EmailNotFoundException, DAOException, WrongPasswordException{
-        /*validateEmail(email);
+        /*checkUniqueEmail(email);
         validatePassword(email, password);
         User user = userDAO.findByEmail(email);
         int hashCodeToken = email.hashCode() + password.hashCode();

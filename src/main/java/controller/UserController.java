@@ -27,23 +27,14 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public CollectionModel<EntityModel<User>> index() throws IOException {
+    public CollectionModel<EntityModel<User>> all() {
         return registrRESTApi.findAll();
     }
-    /*
-    @PostMapping("/auth/login")
-    public void login() {
-        LoginRESTApi.login();
+
+    @GetMapping("/users/{id}")
+    public CollectionModel<EntityModel<User>> one(@PathVariable int id) {
+        return registrRESTApi.findAll();
     }
 
-    @PostMapping("/auth/logout")
-    public void logout() {
-        LogoutRESTApi.logout();
-    }
 
-    @GetMapping("/auth/users")
-    public void users() {
-
-    }
-    */
 }

@@ -2,9 +2,11 @@ package controller;
 
 import exceptions.DAOException;
 import exceptions.EmailConflictException;
+import exceptions.NotValidEmailException;
 import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import service.UserDAOServiceRegistr;
@@ -24,9 +26,20 @@ public class RegistrRESTApi extends RESTApi {
         try {
             return userDAOService.register(user);
         } catch (DAOException e) {
-            return new ResponseEntity("{\"message\": \"Internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Internal server error\"}");
         } catch (EmailConflictException e) {
-            return  new ResponseEntity("{\"message\": \"Email is already registered!\"}", HttpStatus.CONFLICT);
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Email is already registered!\"}");
+        } catch (NotValidEmailException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Not a valid email!\"}");
         }
     }
 }
