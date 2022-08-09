@@ -3,13 +3,12 @@ package service;
 import exceptions.NotAuthorizedEception;
 import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
-import model.Token;
 
 public class UserDAOServiceLogout extends UserDAOService {
 
     private TokenDAO TokenDAO;
-    public UserDAOServiceLogout() {
-
+    public UserDAOServiceLogout(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
+        super(userDAO, tokenDAO, assembler);
     }
 
 

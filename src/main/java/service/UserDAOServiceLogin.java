@@ -3,16 +3,12 @@ package service;
 import exceptions.DAOException;
 import exceptions.EmailNotFoundException;
 import exceptions.WrongPasswordException;
+import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
-import model.Token;
-import model.User;
-import model.repository.UserRepository;
-import utils.RequestType;
 
 public class UserDAOServiceLogin extends UserDAOService{
-    private UserDAO userDAO;
-    public UserDAOServiceLogin() {
-
+        public UserDAOServiceLogin(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
+        super(userDAO, tokenDAO, assembler);
     }
 
 

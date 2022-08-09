@@ -25,8 +25,8 @@ public class UserDAO {
     }
 
 
-    public Optional<User> findById(long id) {
-        return repository.findById(id);
+    public User findById(long id) {
+        return repository.findById(id).get();
     }
 
 

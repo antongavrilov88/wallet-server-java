@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 @WebServlet("/auth/login")
 public class LoginRESTApi extends RESTApi {
 
-    UserDAOServiceLogin userDAOService = new UserDAOServiceLogin();
+    UserDAOServiceLogin userDAOService;
 
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

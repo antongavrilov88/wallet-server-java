@@ -6,24 +6,20 @@ import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
 import model.Token;
 import model.User;
-import model.repository.TokenRepository;
-import model.repository.UserRepository;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class UserDAOServiceRegistr {
-    private final UserDAO userDAO;
-    private final TokenDAO tokenDAO;
+public class UserDAOServiceRegistr extends UserDAOService {
 
-    private final UserModelAssembler assembler;
 
-    public UserDAOServiceRegistr(UserDAO userDAO, TokenDAO tokenDAO) {
-        this.assembler = new UserModelAssembler();
-        this.userDAO = userDAO;
-        this.tokenDAO = tokenDAO;
+
+    public UserDAOServiceRegistr(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
+        super(userDAO, tokenDAO, assembler);
     }
 
     public ResponseEntity<?> register(User user) throws EmailConflictException, DAOException {
@@ -41,7 +37,8 @@ public class UserDAOServiceRegistr {
         } else {
             throw new DAOException();
         }
-        return null;
+        EntityModel<User> entityModel = assembler.toModel(savedUser);
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
     }
 
     void validateEmail(String email) throws EmailConflictException {

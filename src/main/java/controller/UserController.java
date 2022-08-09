@@ -3,6 +3,8 @@ package controller;
 import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +26,9 @@ public class UserController {
         return registrRESTApi.register(user);
     }
 
-    @GetMapping("/")
-    public String index() throws IOException {
-        return "Бля, работает";
+    @GetMapping("/users")
+    public CollectionModel<EntityModel<User>> index() throws IOException {
+        return registrRESTApi.findAll();
     }
     /*
     @PostMapping("/auth/login")

@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 
 @WebServlet("/auth/logout")
 public class LogoutRESTApi extends RESTApi {
-    UserDAOServiceLogout userDAOService = new UserDAOServiceLogout();
+    UserDAOServiceLogout userDAOService;
 
 
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
