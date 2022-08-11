@@ -30,8 +30,7 @@ public abstract class UserDAOService {
 
     //TODO all methods in UserDAOService
     public User findUserByEmail(String email) {
-        //return userRepository.findByEmail(email);
-        return null;
+        return userDAO.findByEmail(email);
     }
 
     public CollectionModel<EntityModel<User>> findAllUsers() {
@@ -60,6 +59,8 @@ public abstract class UserDAOService {
     void validatePassword(User user) throws WrongPasswordException {
         String password = String.valueOf(user.getPass().hashCode());
         if (!password.equals(userDAO.findByEmail(user.getEmail()).getPass())) {
+            System.out.println(password);
+            System.out.println(userDAO.findByEmail(user.getEmail()).getPass());
             throw new WrongPasswordException();
         }
     }
