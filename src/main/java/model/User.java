@@ -2,32 +2,45 @@ package model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
 
+@Schema(description = "User entity")
 @Component
 @Entity
 @Table(name = "users")
+@ResponseBody
 public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+
     private int id;
 
-    private String email;
-    private String pass;
-    @Column(name = "is_admin")
-    private boolean isAdmin = false;
 
-    public void setAdmin(boolean admin) {
+    private String email;
+    @Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
+    private String pass;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    @Column(name = "is_admin")
+    private boolean isAdmin;
+
+    public void getIsAdmin(boolean admin) {
         isAdmin = admin;
     }
 
 
 
-    public boolean isAdmin() {
+    public boolean getIsAdmin() {
         return isAdmin;
     }
 

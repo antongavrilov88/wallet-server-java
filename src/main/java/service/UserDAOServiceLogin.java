@@ -34,7 +34,7 @@ public class UserDAOServiceLogin extends UserDAOService{
         if (userDAO.save(token) == null) {
             throw new DAOException();
         }
-        String jsonString = String.format(UserDAOService.jsonReturnString, RequestType.AUTH, user.getId(), email, token.getUserToken(), user.isAdmin());
+        String jsonString = String.format(UserDAOService.jsonReturnString, RequestType.AUTH, user.getId(), email, token.getUserToken(), user.getIsAdmin());
         return jsonString; */ return null;
     }
 }
