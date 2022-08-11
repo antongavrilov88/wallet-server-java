@@ -1,10 +1,12 @@
 package service;
 
 import exceptions.DAOException;
+import exceptions.EmailConflictException;
 import exceptions.EmailNotFoundException;
 import exceptions.WrongPasswordException;
 import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
+import model.User;
 
 public class UserDAOServiceLogin extends UserDAOService{
         public UserDAOServiceLogin(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
@@ -12,21 +14,12 @@ public class UserDAOServiceLogin extends UserDAOService{
     }
 
 
-    void validateEmail(String email) throws EmailNotFoundException {
-        if (userDAO.findByEmail(email) == null) {
-            throw new EmailNotFoundException();
-        }
-    }
 
-    void validatePassword(String email, String password) throws WrongPasswordException {
-        if (!password.equals(userDAO.findByEmail(email).getPass())) {
-            throw new WrongPasswordException();
-        }
-    }
 
-    public String login(String email, String password) throws EmailNotFoundException, DAOException, WrongPasswordException{
-        /*checkUniqueEmail(email);
-        validatePassword(email, password);
+
+    public String login(User user) throws EmailNotFoundException, DAOException, WrongPasswordException, EmailConflictException {
+        checkUniqueEmail(user.getEmail());
+        validatePassword(user);
         User user = userDAO.findByEmail(email);
         int hashCodeToken = email.hashCode() + password.hashCode();
         int usersId = user.getId();

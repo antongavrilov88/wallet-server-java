@@ -44,18 +44,5 @@ public class UserDAOServiceRegistr extends UserDAOService {
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
     }
 
-    void checkUniqueEmail(String email) throws EmailConflictException {
-        List<User> allUsers = userDAO.findAll();
-        for (User user : allUsers) {
-            if (user.getEmail().equals(email)) {
-                throw new EmailConflictException();
-            }
-        }
-    }
 
-    void validateEmail(String email) throws NotValidEmailException {
-        if (!EmailValidator.getInstance().isValid(email)) {
-            throw new NotValidEmailException();
-        }
-    }
 }
