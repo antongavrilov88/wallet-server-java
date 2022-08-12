@@ -20,7 +20,11 @@ public class UserDAO {
 
 
     public User findByEmail(String email) {
-        //TODO findByEmail
+        for (User user : repository.findAll()) {
+            if (user.getEmail().equals(email)) {
+                return user;
+            }
+        }
         return null;
     }
 

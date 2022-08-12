@@ -1,6 +1,7 @@
 package controller;
 
 import exceptions.NotAuthorizedEception;
+import org.springframework.stereotype.Component;
 import service.UserDAOServiceLogout;
 
 import javax.servlet.annotation.WebServlet;
@@ -9,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/auth/logout")
+@Component
 public class LogoutRESTApi extends RESTApi {
     UserDAOServiceLogout userDAOService;
 

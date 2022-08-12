@@ -1,8 +1,12 @@
 package service;
 
+import exceptions.EmailConflictException;
+import exceptions.NotValidEmailException;
+import exceptions.WrongPasswordException;
 import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
 import model.User;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +30,7 @@ public abstract class UserDAOService {
 
     //TODO all methods in UserDAOService
     public User findUserByEmail(String email) {
-        //return userRepository.findByEmail(email);
-        return null;
+        return userDAO.findByEmail(email);
     }
 
     public CollectionModel<EntityModel<User>> findAllUsers() {
@@ -36,6 +39,29 @@ public abstract class UserDAOService {
                 .collect(Collectors.toList());
         return CollectionModel.of(users,
                 linkTo(methodOn(UserDAO.class).findAll()).withRel("users"));
+    }
+
+    void checkUniqueEmail(String email) throws EmailConflictException {
+        List<User> allUsers = userDAO.findAll();
+        for (User user : allUsers) {
+            if (user.getEmail().equals(email)) {
+                throw new EmailConflictException();
+            }
+        }
+    }
+
+    void validateEmail(String email) throws NotValidEmailException {
+        if (!EmailValidator.getInstance().isValid(email)) {
+            throw new NotValidEmailException();
+        }
+    }
+
+    void validatePassword(User user) throws WrongPasswordException {
+        if (!user.getPass().equals(userDAO.findByEmail(user.getEmail()).getPass())) {
+            System.out.println(user.getPass().hashCode());
+            System.out.println(userDAO.findByEmail(user.getEmail()).getPass());
+            throw new WrongPasswordException();
+        }
     }
 
     public User findUserById(Long id) {

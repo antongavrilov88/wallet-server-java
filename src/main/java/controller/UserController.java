@@ -1,21 +1,17 @@
 package controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import service.RequestResponseDto;
 
-import javax.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
-import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -23,15 +19,21 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
     final
     RegistrRESTApi registrRESTApi;
+    final
+    LoginRESTApi loginRESTApi;
+    final
+    LogoutRESTApi logoutRESTApi;
 
-    public UserController(RegistrRESTApi registrRESTApi) {
+    public UserController(RegistrRESTApi registrRESTApi, LoginRESTApi loginRESTApi, LogoutRESTApi logoutRESTApi) {
         this.registrRESTApi = registrRESTApi;
+        this.loginRESTApi = loginRESTApi;
+        this.logoutRESTApi = logoutRESTApi;
     }
 
 
     @PostMapping(value = "/auth/registration", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
-    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = User.class)))
-    ResponseEntity<?> register(@RequestBody User user) throws IOException {
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = RequestResponseDto.class)))
+    ResponseEntity<?> register(@RequestBody RequestResponseDto user) throws IOException {
         return registrRESTApi.register(user);
     }
 
@@ -45,5 +47,10 @@ public class UserController {
         return registrRESTApi.findAll();
     }
 
+    @PostMapping(value = "/auth/login", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = RequestResponseDto.class)))
+    ResponseEntity<?> login(@RequestBody RequestResponseDto user) throws IOException {
+        return loginRESTApi.login(user);
+    }
 
 }

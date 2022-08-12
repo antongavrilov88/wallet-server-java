@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import service.RequestResponseDto;
 import service.UserDAOServiceRegistr;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class RegistrRESTApi extends RESTApi {
     }
 
 
-    public ResponseEntity<?> register(User user) throws IOException {
+    public ResponseEntity<?> register(RequestResponseDto user) throws IOException {
         try {
             return userDAOService.register(user);
         } catch (DAOException e) {
