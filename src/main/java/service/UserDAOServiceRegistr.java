@@ -7,13 +7,10 @@ import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
 import model.Token;
 import model.User;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class UserDAOServiceRegistr extends UserDAOService {
@@ -24,7 +21,10 @@ public class UserDAOServiceRegistr extends UserDAOService {
         super(userDAO, tokenDAO, assembler);
     }
 
-    public ResponseEntity<?> register(User user) throws EmailConflictException, DAOException, NotValidEmailException {
+    public ResponseEntity<?> register(RequestResponseDto rrDtoReq) throws EmailConflictException, DAOException, NotValidEmailException {
+        RequestResponseDto.UserDto userDto = rrDtoReq.getData();
+        User user = userDto.getUser().getContent();
+        String type = rrDtoReq.getType();
         validateEmail(user.getEmail());
         checkUniqueEmail(user.getEmail());
         Token token;
@@ -41,7 +41,10 @@ public class UserDAOServiceRegistr extends UserDAOService {
             throw new DAOException();
         }
         EntityModel<User> entityModel = assembler.toModel(savedUser);
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
+        RequestResponseDto rrDtoResp = new RequestResponseDto();
+        RequestResponseDto.UserDto userDtoResp = rrDtoResp.new UserDto(entityModel, token);
+        rrDtoReq.setData(userDtoResp);
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(rrDtoResp);
     }
 
 

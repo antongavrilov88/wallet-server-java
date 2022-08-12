@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import service.RequestResponseDto;
 import service.UserDAOService;
 import service.UserDAOServiceLogin;
 
@@ -31,7 +32,7 @@ public class LoginRESTApi extends RESTApi {
     }
 
 
-    public ResponseEntity<?> login(User user) {
+    public ResponseEntity<?> login(RequestResponseDto user) {
         try {
             return userDAOService.login(user);
         } catch (DAOException e) {

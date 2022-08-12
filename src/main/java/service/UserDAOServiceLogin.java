@@ -24,7 +24,8 @@ public class UserDAOServiceLogin extends UserDAOService{
 
 
 
-    public ResponseEntity<?> login(User user) throws EmailNotFoundException, DAOException, WrongPasswordException {
+    public ResponseEntity<?> login(RequestResponseDto rrDtoReq) throws EmailNotFoundException, DAOException, WrongPasswordException {
+        User user = rrDtoReq.getData().getUser().getContent();
         try {
             checkUniqueEmail(user.getEmail());
         } catch (EmailConflictException e) {
@@ -37,7 +38,10 @@ public class UserDAOServiceLogin extends UserDAOService{
                 throw new DAOException();
             }
             EntityModel<User> entityModel = assembler.toModel(userFound);
-            return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
+            RequestResponseDto rrDtoResp = new RequestResponseDto();
+            RequestResponseDto.UserDto userDtoResp = rrDtoResp.new UserDto(entityModel, token);
+            rrDtoReq.setData(userDtoResp);
+            return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(rrDtoResp);
         }
         throw new EmailNotFoundException();
     }

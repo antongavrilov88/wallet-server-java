@@ -8,6 +8,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import service.RequestResponseDto;
+
 
 import java.io.IOException;
 
@@ -30,8 +32,8 @@ public class UserController {
 
 
     @PostMapping(value = "/auth/registration", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
-    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = User.class)))
-    ResponseEntity<?> register(@RequestBody User user) throws IOException {
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = RequestResponseDto.class)))
+    ResponseEntity<?> register(@RequestBody RequestResponseDto user) throws IOException {
         return registrRESTApi.register(user);
     }
 
@@ -46,8 +48,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/auth/login", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
-    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = User.class)))
-    ResponseEntity<?> login(@RequestBody User user) throws IOException {
+    @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = RequestResponseDto.class)))
+    ResponseEntity<?> login(@RequestBody RequestResponseDto user) throws IOException {
         return loginRESTApi.login(user);
     }
 
