@@ -57,9 +57,8 @@ public abstract class UserDAOService {
     }
 
     void validatePassword(User user) throws WrongPasswordException {
-        String password = String.valueOf(user.getPass().hashCode());
-        if (!password.equals(userDAO.findByEmail(user.getEmail()).getPass())) {
-            System.out.println(password);
+        if (!user.getPass().equals(userDAO.findByEmail(user.getEmail()).getPass())) {
+            System.out.println(user.getPass().hashCode());
             System.out.println(userDAO.findByEmail(user.getEmail()).getPass());
             throw new WrongPasswordException();
         }

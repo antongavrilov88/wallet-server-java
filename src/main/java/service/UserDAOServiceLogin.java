@@ -31,7 +31,7 @@ public class UserDAOServiceLogin extends UserDAOService{
             validatePassword(user);
             User userFound = userDAO.findByEmail(user.getEmail());
             int hashCodeToken = userFound.getEmail().hashCode() + userFound.getPass().hashCode();
-            int usersId = user.getId();
+            int usersId = userFound.getId();
             Token token = new Token(String.valueOf(hashCodeToken), usersId, true);
             if (tokenDAO.save(token) == null) {
                 throw new DAOException();
