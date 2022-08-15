@@ -1,25 +1,21 @@
 package service;
 
-import exceptions.NotAuthorizedEception;
+import exceptions.NotAuthorizedException;
 import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
+import model.Token;
 
 public class UserDAOServiceLogout extends UserDAOService {
 
-    private TokenDAO TokenDAO;
+    private TokenDAO tokenDAO;
     public UserDAOServiceLogout(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
         super(userDAO, tokenDAO, assembler);
     }
 
 
 
-    public void logout(String userToken) throws NotAuthorizedEception {
-        /* Token token = TokenDAO.getToken(userToken);
-        if (token != null && token.isActive()) {
-            token.setActive(false);
-            TokenDAO.update(token);
-        } else {
-            throw new NotAuthorizedEception();
-        } */
+    public void logout(Token token) throws NotAuthorizedException {
+        token.setIsActive(false);
+        tokenDAO.update(token);
     }
 }

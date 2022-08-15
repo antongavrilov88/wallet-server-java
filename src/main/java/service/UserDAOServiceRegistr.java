@@ -7,13 +7,15 @@ import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
 import model.Token;
 import model.User;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
+import service.dto.RequestDto;
+import service.dto.ResponseDto;
+import utils.RequestType;
 
 @Component
 public class UserDAOServiceRegistr extends UserDAOService {
@@ -24,7 +26,15 @@ public class UserDAOServiceRegistr extends UserDAOService {
         super(userDAO, tokenDAO, assembler);
     }
 
-    public ResponseEntity<?> register(User user) throws EmailConflictException, DAOException, NotValidEmailException {
+    public ResponseEntity<?> register(RequestDto reqDto) throws EmailConflictException, DAOException, NotValidEmailException {
+        User user = reqDto.getData();
+        String type = reqDto.getType();
+        if (!type.equals(RequestType.AUTH.toString())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Wrong request type\"}");
+        }
         validateEmail(user.getEmail());
         checkUniqueEmail(user.getEmail());
         Token token;
@@ -41,21 +51,13 @@ public class UserDAOServiceRegistr extends UserDAOService {
             throw new DAOException();
         }
         EntityModel<User> entityModel = assembler.toModel(savedUser);
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
+        ResponseDto respDto = new ResponseDto();
+        ResponseDto.UserDto userDtoResp = respDto.new UserDto();
+        userDtoResp.transform(entityModel, token);
+        respDto.setData(userDtoResp);
+        respDto.setType(type);
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
     }
 
-    void checkUniqueEmail(String email) throws EmailConflictException {
-        List<User> allUsers = userDAO.findAll();
-        for (User user : allUsers) {
-            if (user.getEmail().equals(email)) {
-                throw new EmailConflictException();
-            }
-        }
-    }
 
-    void validateEmail(String email) throws NotValidEmailException {
-        if (!EmailValidator.getInstance().isValid(email)) {
-            throw new NotValidEmailException();
-        }
-    }
 }

@@ -1,40 +1,62 @@
 package service;
 
 import exceptions.DAOException;
+import exceptions.EmailConflictException;
 import exceptions.EmailNotFoundException;
 import exceptions.WrongPasswordException;
 import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
+import model.Token;
+import model.User;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import service.dto.RequestDto;
+import service.dto.ResponseDto;
+import utils.RequestType;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+@Component
 public class UserDAOServiceLogin extends UserDAOService{
         public UserDAOServiceLogin(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
         super(userDAO, tokenDAO, assembler);
     }
 
 
-    void validateEmail(String email) throws EmailNotFoundException {
-        if (userDAO.findByEmail(email) == null) {
-            throw new EmailNotFoundException();
-        }
-    }
 
-    void validatePassword(String email, String password) throws WrongPasswordException {
-        if (!password.equals(userDAO.findByEmail(email).getPass())) {
-            throw new WrongPasswordException();
-        }
-    }
 
-    public String login(String email, String password) throws EmailNotFoundException, DAOException, WrongPasswordException{
-        /*checkUniqueEmail(email);
-        validatePassword(email, password);
-        User user = userDAO.findByEmail(email);
-        int hashCodeToken = email.hashCode() + password.hashCode();
-        int usersId = user.getId();
-        Token token = new Token(String.valueOf(hashCodeToken), usersId, true);
-        if (userDAO.save(token) == null) {
-            throw new DAOException();
+
+    public ResponseEntity<?> login(RequestDto reqDto) throws EmailNotFoundException, DAOException, WrongPasswordException {
+        User user = reqDto.getData();
+        String type = reqDto.getType();
+        if (!type.equals(RequestType.AUTH.toString())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Wrong request type\"}");
         }
-        String jsonString = String.format(UserDAOService.jsonReturnString, RequestType.AUTH, user.getId(), email, token.getUserToken(), user.getIsAdmin());
-        return jsonString; */ return null;
+        try {
+            checkUniqueEmail(user.getEmail());
+        } catch (EmailConflictException e) {
+            validatePassword(user);
+            User userFound = userDAO.findByEmail(user.getEmail());
+            int hashCodeToken = userFound.getEmail().hashCode() + userFound.getPass().hashCode();
+            int usersId = userFound.getId();
+            Token token = new Token(String.valueOf(hashCodeToken), usersId, true);
+            if (tokenDAO.save(token) == null) {
+                throw new DAOException();
+            }
+            EntityModel<User> entityModel = assembler.toModel(userFound);
+            ResponseDto respDto = new ResponseDto();
+            ResponseDto.UserDto userDtoResp = respDto.new UserDto();
+            userDtoResp.transform(entityModel, token);
+            respDto.setData(userDtoResp);
+            respDto.setType(type);
+            return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
+        }
+        throw new EmailNotFoundException();
     }
 }

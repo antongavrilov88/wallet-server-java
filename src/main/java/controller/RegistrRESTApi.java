@@ -3,13 +3,12 @@ package controller;
 import exceptions.DAOException;
 import exceptions.EmailConflictException;
 import exceptions.NotValidEmailException;
-import io.swagger.v3.oas.annotations.media.Schema;
-import model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import service.dto.RequestDto;
+import service.dto.ResponseDto;
 import service.UserDAOServiceRegistr;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class RegistrRESTApi extends RESTApi {
     }
 
 
-    public ResponseEntity<?> register(User user) throws IOException {
+    public ResponseEntity<?> register(RequestDto user) throws IOException {
         try {
             return userDAOService.register(user);
         } catch (DAOException e) {

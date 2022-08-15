@@ -1,28 +1,33 @@
 package controller;
 
-import exceptions.NotAuthorizedEception;
+import exceptions.NotAuthorizedException;
+import model.Token;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import service.UserDAOServiceLogout;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-@WebServlet("/auth/logout")
+@Component
 public class LogoutRESTApi extends RESTApi {
     UserDAOServiceLogout userDAOService;
 
-
-    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter writer = resp.getWriter();
+    @DeleteMapping("auth/logout")
+    public ResponseEntity<?> logout(@RequestParam Token token) throws IOException {
         try {
-            userDAOService.logout(getToken(req));
-            resp.setStatus(200);
-            writer.write("");
-        } catch (NotAuthorizedEception e) {
-            resp.setStatus(401);
-            writer.write("");
+            userDAOService.logout(token);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON).body(null);
+        } catch (NotAuthorizedException e) {
+            ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .contentType(MediaType.APPLICATION_JSON).body(null);
         }
+        return null;
     }
 }
