@@ -10,8 +10,13 @@ import model.Token;
 import model.User;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import service.dto.RequestDto;
+import service.dto.ResponseDto;
+import utils.RequestType;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @Component
@@ -24,8 +29,15 @@ public class UserDAOServiceLogin extends UserDAOService{
 
 
 
-    public ResponseEntity<?> login(RequestResponseDto rrDtoReq) throws EmailNotFoundException, DAOException, WrongPasswordException {
-        User user = rrDtoReq.getData().getUser().getContent();
+    public ResponseEntity<?> login(RequestDto reqDto) throws EmailNotFoundException, DAOException, WrongPasswordException {
+        User user = reqDto.getData();
+        String type = reqDto.getType();
+        if (!type.equals(RequestType.AUTH.toString())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Wrong request type\"}");
+        }
         try {
             checkUniqueEmail(user.getEmail());
         } catch (EmailConflictException e) {
@@ -38,10 +50,12 @@ public class UserDAOServiceLogin extends UserDAOService{
                 throw new DAOException();
             }
             EntityModel<User> entityModel = assembler.toModel(userFound);
-            RequestResponseDto rrDtoResp = new RequestResponseDto();
-            RequestResponseDto.UserDto userDtoResp = rrDtoResp.new UserDto(entityModel, token);
-            rrDtoReq.setData(userDtoResp);
-            return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(rrDtoResp);
+            ResponseDto respDto = new ResponseDto();
+            ResponseDto.UserDto userDtoResp = respDto.new UserDto();
+            userDtoResp.transform(entityModel, token);
+            respDto.setData(userDtoResp);
+            respDto.setType(type);
+            return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
         }
         throw new EmailNotFoundException();
     }

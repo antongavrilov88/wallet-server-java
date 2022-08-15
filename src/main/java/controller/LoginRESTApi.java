@@ -1,26 +1,15 @@
 package controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import exceptions.DAOException;
-import exceptions.EmailConflictException;
 import exceptions.EmailNotFoundException;
 import exceptions.WrongPasswordException;
-import model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import service.RequestResponseDto;
-import service.UserDAOService;
+import service.dto.RequestDto;
+import service.dto.ResponseDto;
 import service.UserDAOServiceLogin;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 @Component
 public class LoginRESTApi extends RESTApi {
@@ -32,7 +21,7 @@ public class LoginRESTApi extends RESTApi {
     }
 
 
-    public ResponseEntity<?> login(RequestResponseDto user) {
+    public ResponseEntity<?> login(RequestDto user) {
         try {
             return userDAOService.login(user);
         } catch (DAOException e) {

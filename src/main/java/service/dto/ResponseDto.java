@@ -1,9 +1,6 @@
-package service;
+package service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeCreator;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.media.Schema;
 import model.Token;
 import model.User;
@@ -11,12 +8,11 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Links;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+//TODO delete commented code
 
 @Component
 @Schema
-public class RequestResponseDto {
+public class ResponseDto {
     private String type;
     private UserDto data;
 
@@ -36,12 +32,12 @@ public class RequestResponseDto {
         this.data = data;
     }
 
-    public RequestResponseDto(String type, UserDto data) {
+    public ResponseDto(String type, UserDto data) {
         this.type = type;
         this.data = data;
     }
 
-    public RequestResponseDto() {
+    public ResponseDto() {
     }
 
     @Schema
@@ -51,8 +47,8 @@ public class RequestResponseDto {
         private String email;
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private boolean isAdmin;
-        @Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
-        private String pass;
+        //@Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
+        // private String pass;
 
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private Links links;
@@ -62,14 +58,21 @@ public class RequestResponseDto {
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private int id;
 
-        public UserDto(EntityModel<User> user, Token rel) {
+        public UserDto() {
+        }
+
+        public void transform(EntityModel<User> user, Token rel) {
+            //TODO refactor this method, use setters
             this.user = user;
             this.rel = rel;
             this.email = user.getContent().getEmail();
             this.isAdmin = user.getContent().getIsAdmin();
-            this.pass = user.getContent().getPass();
+            // this.pass = user.getContent().getPass();
             this.links = user.getLinks();
+            this.id = user.getContent().getId();
         }
+
+
 
         public int getId() {
             return id;
@@ -79,13 +82,13 @@ public class RequestResponseDto {
             this.id = id;
         }
 
-        public String getPass() {
+        /* public String getPass() {
             return pass;
-        }
+        } */
 
-        public void setPass(String pass) {
+        /* public void setPass(String pass) {
             this.pass = pass;
-        }
+        } */
 
         public Links getLinks() {
             return links;
