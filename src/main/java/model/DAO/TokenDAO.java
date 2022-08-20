@@ -32,7 +32,6 @@ public class TokenDAO {
     }
 
     public void update(Token token) throws NotAuthorizedException {
-        //TODO update
         Token foundToken = findTokenByToken(token);
         foundToken = token;
         repository.save(foundToken);

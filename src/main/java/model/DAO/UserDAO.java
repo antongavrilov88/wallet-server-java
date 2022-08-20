@@ -2,12 +2,9 @@ package model.DAO;
 
 import model.User;
 import model.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class UserDAO {
@@ -21,7 +18,7 @@ public class UserDAO {
 
     public User findByEmail(String email) {
         for (User user : repository.findAll()) {
-            if (user.getEmail().equals(email)) {
+            if (user.getUsername().equals(email)) {
                 return user;
             }
         }
@@ -29,8 +26,9 @@ public class UserDAO {
     }
 
 
-    public User findById(long id) {
-        return repository.findById(id).get();
+    public User findById(int id) {
+        //TODO resolve id type issue
+        return repository.findById((long) id).get();
     }
 
 

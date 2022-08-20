@@ -7,6 +7,7 @@ import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
 import model.Token;
 import model.User;
+import org.springframework.context.annotation.Primary;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,9 @@ import service.dto.RequestDto;
 import service.dto.ResponseDto;
 import utils.RequestType;
 
+//TODO reconsider classes structure, only one of the UserDAOService may live
 @Component
+@Primary
 public class UserDAOServiceRegistr extends UserDAOService {
 
 
@@ -35,12 +38,12 @@ public class UserDAOServiceRegistr extends UserDAOService {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{\"message\": \"Wrong request type\"}");
         }
-        validateEmail(user.getEmail());
-        checkUniqueEmail(user.getEmail());
+        validateEmail(user.getUsername());
+        checkUniqueEmail(user.getUsername());
         Token token;
         User savedUser;
         if ((savedUser = userDAO.save(user)) != null) {
-            int hashCodeToken = user.getEmail().hashCode() + user.getPass().hashCode();
+            int hashCodeToken = user.getUsername().hashCode() + user.getPassword().hashCode();
             int userId = savedUser.getId();
             token = new Token(String.valueOf(hashCodeToken), userId, true);
             if (tokenDAO.save(token) == null) {

@@ -39,11 +39,11 @@ public class UserDAOServiceLogin extends UserDAOService{
                     .body("{\"message\": \"Wrong request type\"}");
         }
         try {
-            checkUniqueEmail(user.getEmail());
+            checkUniqueEmail(user.getUsername());
         } catch (EmailConflictException e) {
             validatePassword(user);
-            User userFound = userDAO.findByEmail(user.getEmail());
-            int hashCodeToken = userFound.getEmail().hashCode() + userFound.getPass().hashCode();
+            User userFound = userDAO.findByEmail(user.getUsername());
+            int hashCodeToken = userFound.getUsername().hashCode() + userFound.getPassword().hashCode();
             int usersId = userFound.getId();
             Token token = new Token(String.valueOf(hashCodeToken), usersId, true);
             if (tokenDAO.save(token) == null) {

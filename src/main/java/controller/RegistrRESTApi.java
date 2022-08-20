@@ -3,6 +3,9 @@ package controller;
 import exceptions.DAOException;
 import exceptions.EmailConflictException;
 import exceptions.NotValidEmailException;
+import model.User;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +45,9 @@ public class RegistrRESTApi extends RESTApi {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{\"message\": \"Not a valid email!\"}");
         }
+    }
+
+    public User findById(int id) {
+        return userDAOService.findUserById(id);
     }
 }

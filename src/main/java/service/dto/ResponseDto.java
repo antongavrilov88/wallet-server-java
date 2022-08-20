@@ -65,9 +65,9 @@ public class ResponseDto {
             //TODO refactor this method, use setters
             this.user = user;
             this.rel = rel;
-            this.email = user.getContent().getEmail();
+            this.email = user.getContent().getUsername();
             this.isAdmin = user.getContent().getIsAdmin();
-            // this.pass = user.getContent().getPass();
+            // this.pass = user.getContent().getPassword();
             this.links = user.getLinks();
             this.id = user.getContent().getId();
         }
@@ -82,11 +82,11 @@ public class ResponseDto {
             this.id = id;
         }
 
-        /* public String getPass() {
+        /* public String getPassword() {
             return pass;
         } */
 
-        /* public void setPass(String pass) {
+        /* public void setPassword(String pass) {
             this.pass = pass;
         } */
 

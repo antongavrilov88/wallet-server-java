@@ -9,15 +9,18 @@ import model.User;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
-
-public abstract class UserDAOService {
+@Service
+public abstract class UserDAOService implements UserDetailsService {
 
     final UserDAO userDAO;
     final TokenDAO tokenDAO;
@@ -29,8 +32,10 @@ public abstract class UserDAOService {
     }
 
     //TODO all methods in UserDAOService
-    public User findUserByEmail(String email) {
-        return userDAO.findByEmail(email);
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        return userDAO.findByEmail(s);
     }
 
     public CollectionModel<EntityModel<User>> findAllUsers() {
@@ -44,7 +49,7 @@ public abstract class UserDAOService {
     void checkUniqueEmail(String email) throws EmailConflictException {
         List<User> allUsers = userDAO.findAll();
         for (User user : allUsers) {
-            if (user.getEmail().equals(email)) {
+            if (user.getUsername().equals(email)) {
                 throw new EmailConflictException();
             }
         }
@@ -57,16 +62,15 @@ public abstract class UserDAOService {
     }
 
     void validatePassword(User user) throws WrongPasswordException {
-        if (!user.getPass().equals(userDAO.findByEmail(user.getEmail()).getPass())) {
-            System.out.println(user.getPass().hashCode());
-            System.out.println(userDAO.findByEmail(user.getEmail()).getPass());
+        if (!user.getPassword().equals(userDAO.findByEmail(user.getUsername()).getPassword())) {
+            System.out.println(user.getPassword().hashCode());
+            System.out.println(userDAO.findByEmail(user.getUsername()).getPassword());
             throw new WrongPasswordException();
         }
     }
 
-    public User findUserById(Long id) {
-        // return userRepository.findById(id);
-        return null;
+    public User findUserById(int id) {
+        return userDAO.findById(id);
     }
 
     /* public void saveUser(User user) {

@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import model.User;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.dto.RequestDto;
@@ -47,8 +49,8 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public CollectionModel<EntityModel<User>> one(@PathVariable int id) {
-        return registrRESTApi.findAll();
+    public User one(@PathVariable int id) {
+        return registrRESTApi.findById(id);
     }
 
     @PostMapping(value = "/auth/login", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
@@ -62,6 +64,15 @@ public class UserController {
     @ApiResponse(responseCode = "200")
     void logout(@Parameter(hidden = true) String token) throws IOException {
         //logoutRESTApi.logout(user);
+    }
+
+    @GetMapping("/index")
+    ResponseEntity<?> index() {
+        //TODO delete this method
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{\"message\": \"Бля, работает!!!\"}");
     }
 
 }
