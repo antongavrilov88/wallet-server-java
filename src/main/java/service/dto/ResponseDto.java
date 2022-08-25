@@ -65,7 +65,7 @@ public class ResponseDto {
             //TODO refactor this method, use setters
             this.user = user;
             this.rel = rel;
-            this.email = user.getContent().getUsername();
+            this.email = user.getContent().getEmail();
             this.isAdmin = user.getContent().getIsAdmin();
             // this.pass = user.getContent().getPassword();
             this.links = user.getLinks();

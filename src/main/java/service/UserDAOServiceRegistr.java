@@ -13,6 +13,7 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import service.dto.RequestDto;
 import service.dto.ResponseDto;
@@ -25,8 +26,8 @@ public class UserDAOServiceRegistr extends UserDAOService {
 
 
 
-    public UserDAOServiceRegistr(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
-        super(userDAO, tokenDAO, assembler);
+    public UserDAOServiceRegistr(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
+        super(userDAO, tokenDAO, assembler, passwordEncoder);
     }
 
     public ResponseEntity<?> register(RequestDto reqDto) throws EmailConflictException, DAOException, NotValidEmailException {
@@ -38,12 +39,15 @@ public class UserDAOServiceRegistr extends UserDAOService {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{\"message\": \"Wrong request type\"}");
         }
-        validateEmail(user.getUsername());
-        checkUniqueEmail(user.getUsername());
+        validateEmail(user.getEmail());
+        checkUniqueEmail(user.getEmail());
         Token token;
         User savedUser;
+        String password = passwordEncoder.encode(user.getPassword());
+        user.setPassword(password);
         if ((savedUser = userDAO.save(user)) != null) {
-            int hashCodeToken = user.getUsername().hashCode() + user.getPassword().hashCode();
+            //TODO refactor token creation
+            int hashCodeToken = user.getEmail().hashCode() + user.getPassword().hashCode();
             int userId = savedUser.getId();
             token = new Token(String.valueOf(hashCodeToken), userId, true);
             if (tokenDAO.save(token) == null) {

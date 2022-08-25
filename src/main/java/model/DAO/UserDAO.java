@@ -2,6 +2,7 @@ package model.DAO;
 
 import model.User;
 import model.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class UserDAO {
 
     public User findByEmail(String email) {
         for (User user : repository.findAll()) {
-            if (user.getUsername().equals(email)) {
+            if (user.getEmail().equals(email)) {
                 return user;
             }
         }
@@ -28,7 +29,7 @@ public class UserDAO {
 
     public User findById(int id) {
         //TODO resolve id type issue
-        return repository.findById((long) id).get();
+        return repository.findById(id).get();
     }
 
 

@@ -1,34 +1,32 @@
 package controller;
 
-import exceptions.DAOException;
-import exceptions.EmailConflictException;
-import exceptions.NotValidEmailException;
+import exceptions.*;
 import model.User;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import service.UserDAOServiceLogin;
 import service.dto.RequestDto;
-import service.dto.ResponseDto;
 import service.UserDAOServiceRegistr;
 
 import java.io.IOException;
 
 @Component
 public class RegistrRESTApi extends RESTApi {
-    private final UserDAOServiceRegistr userDAOService;
+    private final UserDAOServiceRegistr userDAOServiceRegistr;
+    private final UserDAOServiceLogin userDAOServiceLogin;
 
-    public RegistrRESTApi(UserDAOServiceRegistr userDAOService) {
-        this.userDAOService = userDAOService;
+    public RegistrRESTApi(UserDAOServiceRegistr userDAOService, UserDAOServiceLogin userDAOServiceLogin) {
+        this.userDAOServiceRegistr = userDAOService;
 
+        this.userDAOServiceLogin = userDAOServiceLogin;
     }
 
 
     public ResponseEntity<?> register(RequestDto user) throws IOException {
         try {
-            return userDAOService.register(user);
+            return userDAOServiceRegistr.register(user);
         } catch (DAOException e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -48,6 +46,6 @@ public class RegistrRESTApi extends RESTApi {
     }
 
     public User findById(int id) {
-        return userDAOService.findUserById(id);
+        return userDAOServiceRegistr.findUserById(id);
     }
 }

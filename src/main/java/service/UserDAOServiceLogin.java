@@ -13,6 +13,7 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import service.dto.RequestDto;
 import service.dto.ResponseDto;
@@ -21,8 +22,8 @@ import utils.RequestType;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @Component
 public class UserDAOServiceLogin extends UserDAOService{
-        public UserDAOServiceLogin(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
-        super(userDAO, tokenDAO, assembler);
+        public UserDAOServiceLogin(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
+        super(userDAO, tokenDAO, assembler, passwordEncoder);
     }
 
 
@@ -39,11 +40,11 @@ public class UserDAOServiceLogin extends UserDAOService{
                     .body("{\"message\": \"Wrong request type\"}");
         }
         try {
-            checkUniqueEmail(user.getUsername());
+            checkUniqueEmail(user.getEmail());
         } catch (EmailConflictException e) {
             validatePassword(user);
-            User userFound = userDAO.findByEmail(user.getUsername());
-            int hashCodeToken = userFound.getUsername().hashCode() + userFound.getPassword().hashCode();
+            User userFound = userDAO.findByEmail(user.getEmail());
+            int hashCodeToken = userFound.getEmail().hashCode() + userFound.getPassword().hashCode();
             int usersId = userFound.getId();
             Token token = new Token(String.valueOf(hashCodeToken), usersId, true);
             if (tokenDAO.save(token) == null) {

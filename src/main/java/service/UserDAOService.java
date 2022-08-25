@@ -9,11 +9,15 @@ import model.User;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,17 +29,22 @@ public abstract class UserDAOService implements UserDetailsService {
     final UserDAO userDAO;
     final TokenDAO tokenDAO;
     final UserModelAssembler assembler;
-    protected UserDAOService(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
+
+    final BCryptPasswordEncoder passwordEncoder;
+    protected UserDAOService(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
         this.tokenDAO = tokenDAO;
         this.assembler = assembler;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    //TODO all methods in UserDAOService
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return userDAO.findByEmail(s);
+        User user = userDAO.findByEmail(s);
+        //TODO implement roles into API
+        Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 
     public CollectionModel<EntityModel<User>> findAllUsers() {
@@ -49,7 +58,7 @@ public abstract class UserDAOService implements UserDetailsService {
     void checkUniqueEmail(String email) throws EmailConflictException {
         List<User> allUsers = userDAO.findAll();
         for (User user : allUsers) {
-            if (user.getUsername().equals(email)) {
+            if (user.getEmail().equals(email)) {
                 throw new EmailConflictException();
             }
         }
@@ -62,9 +71,9 @@ public abstract class UserDAOService implements UserDetailsService {
     }
 
     void validatePassword(User user) throws WrongPasswordException {
-        if (!user.getPassword().equals(userDAO.findByEmail(user.getUsername()).getPassword())) {
+        if (!user.getPassword().equals(userDAO.findByEmail(user.getEmail()).getPassword())) {
             System.out.println(user.getPassword().hashCode());
-            System.out.println(userDAO.findByEmail(user.getUsername()).getPassword());
+            System.out.println(userDAO.findByEmail(user.getEmail()).getPassword());
             throw new WrongPasswordException();
         }
     }
@@ -72,18 +81,5 @@ public abstract class UserDAOService implements UserDetailsService {
     public User findUserById(int id) {
         return userDAO.findById(id);
     }
-
-    /* public void saveUser(User user) {
-        userRepository.save(user);
-    }
-
-    // public void deleteUser(User user) {
-        userRepository.delete(user);
-    }
-
-    public void updateUser(User user) {
-        userRepository.save(user);
-    } */
-
 
 }

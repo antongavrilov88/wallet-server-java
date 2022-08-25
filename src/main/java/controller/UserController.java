@@ -12,6 +12,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import service.dto.RequestDto;
 import service.dto.ResponseDto;
@@ -35,7 +36,6 @@ public class UserController {
         this.loginRESTApi = loginRESTApi;
         this.logoutRESTApi = logoutRESTApi;
     }
-
 
     @PostMapping(value = "/auth/registration", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
