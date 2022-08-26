@@ -51,8 +51,6 @@ public class UserDAOServiceRegistr extends UserDAOService {
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
         if ((savedUser = userDAO.save(user)) != null) {
-            //TODO refactor token creation
-
             Algorithm algorithm = Algorithm.HMAC256("dickcheese".getBytes());
             String accessToken = JWT.create()
                     .withSubject(savedUser.getEmail())
@@ -68,7 +66,7 @@ public class UserDAOServiceRegistr extends UserDAOService {
 
             int userId = savedUser.getId();
             accessTokenToken = new Token("Bearer " + accessToken, userId, true);
-            refreshTokenToken = new Token("Bearer " + accessToken, userId, true);
+            refreshTokenToken = new Token("Bearer " + refreshToken, userId, true);
             if (tokenDAO.save(accessTokenToken) == null || tokenDAO.save(refreshTokenToken) == null) {
                 userDAO.delete(user);
                 tokenDAO.delete(accessTokenToken);

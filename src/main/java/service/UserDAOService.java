@@ -84,8 +84,8 @@ public abstract class UserDAOService implements UserDetailsService {
     }
 
     void validatePassword(User user) throws WrongPasswordException {
-        if (!user.getPassword().equals(userDAO.findByEmail(user.getEmail()).getPassword())) {
-            System.out.println(user.getPassword().hashCode());
+        if (!passwordEncoder.matches(user.getPassword(), userDAO.findByEmail(user.getEmail()).getPassword())) {
+            System.out.println(passwordEncoder.encode(user.getPassword()));
             System.out.println(userDAO.findByEmail(user.getEmail()).getPassword());
             throw new WrongPasswordException();
         }
@@ -95,47 +95,6 @@ public abstract class UserDAOService implements UserDetailsService {
         return userDAO.findById(id);
     }
 
-    public ResponseEntity<?> login(RequestDto requestDto) throws IOException {
 
-        User user = requestDto.getData();
-        String type = requestDto.getType();
-        String issuer = requestDto.getIssuer();
-        if (!type.equals(RequestType.AUTH.toString())) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("{\"message\": \"Wrong request type\"}");
-        }
-        User userFound = userDAO.findByEmail(user.getEmail());
-        int usersId = userFound.getId();
-        Algorithm algorithm = Algorithm.HMAC256("dickcheese".getBytes());
-        String accessToken = JWT.create()
-                .withSubject(user.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1440*60*100000)) //24h token
-                .withIssuer(issuer)
-                .sign(algorithm);
-
-        String refreshToken = JWT.create()
-                .withSubject(user.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 20160*60*100000)) // 2 weeks token
-                .withIssuer(issuer)
-                .sign(algorithm);
-
-        Token accessTokenToken = new Token("Bearer " + accessToken, usersId, true);
-        Token refreshTokenToken = new Token("Bearer " + refreshToken, usersId, true);
-        if (tokenDAO.save(accessTokenToken) == null || tokenDAO.save(refreshTokenToken) == null) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("{\"message\": \"Internal server error\"}");
-        }
-        EntityModel<User> entityModel = assembler.toModel(userFound);
-        ResponseDto respDto = new ResponseDto();
-        ResponseDto.UserDto userDtoResp = respDto.new UserDto();
-        userDtoResp.transform(entityModel, accessTokenToken, refreshTokenToken);
-        respDto.setData(userDtoResp);
-        respDto.setType(type);
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
-    }
 
 }

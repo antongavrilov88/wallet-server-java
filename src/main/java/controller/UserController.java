@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import model.User;
+import org.apache.tomcat.util.http.parser.Authorization;
+import org.springframework.data.repository.query.Param;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -61,11 +63,11 @@ public class UserController {
         return loginRESTApi.login(user);
     }
 
-    @Operation(security = @SecurityRequirement(name = "Bearer"))
-    @PostMapping(value = "/auth/logout", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
+
+    @PostMapping("/auth/logout")
     @ApiResponse(responseCode = "200")
-    void logout(@Parameter(hidden = true) String token) throws IOException {
-        //logoutRESTApi.logout(user);
+    void logout(@RequestHeader(name = "Authorization") String accessToken) throws IOException {
+        logoutRESTApi.logout(accessToken);
     }
 
     @GetMapping("/index")
@@ -76,5 +78,4 @@ public class UserController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("{\"message\": \"Бля, работает!!!\"}");
     }
-
 }

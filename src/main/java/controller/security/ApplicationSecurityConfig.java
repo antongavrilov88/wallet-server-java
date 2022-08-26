@@ -40,12 +40,6 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilter(new UsernamePasswordAuthenticationFilter())
                 .addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        /* http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/auth/registration").permitAll();
-        http.authorizeRequests().antMatchers("/auth/registration").permitAll();
-        http.addFilter(new JwtEmailPasswordAuthenticationFilter(authenticationManagerBean())); */
     }
 
     @Override

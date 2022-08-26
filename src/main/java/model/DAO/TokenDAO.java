@@ -3,10 +3,8 @@ package model.DAO;
 import exceptions.NotAuthorizedException;
 import model.Token;
 import model.repository.TokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +30,7 @@ public class TokenDAO {
     }
 
     public void update(Token token) throws NotAuthorizedException {
-        Token foundToken = findTokenByToken(token);
+        Token foundToken = findTokenByUserToken(token.getUserToken());
         foundToken = token;
         repository.save(foundToken);
     }
@@ -45,8 +43,7 @@ public class TokenDAO {
         return repository.findAll();
     }
 
-    public Token findTokenByToken(Token token) throws NotAuthorizedException {
-        String userToken = token.getUserToken();
+    public Token findTokenByUserToken(String userToken) throws NotAuthorizedException {
         for (Token tokenFound : repository.findAll()) {
             if (tokenFound.getUserToken().equals(userToken)) {
                 return tokenFound;
