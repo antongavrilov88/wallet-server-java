@@ -11,6 +11,8 @@ import service.dto.RequestDto;
 import service.dto.ResponseDto;
 import service.UserDAOServiceLogin;
 
+import java.io.IOException;
+
 @Component
 public class LoginRESTApi extends RESTApi {
 
@@ -21,10 +23,9 @@ public class LoginRESTApi extends RESTApi {
     }
 
 
-    public ResponseEntity<?> login(RequestDto user) {
-        try {
+    public ResponseEntity<?> login(RequestDto user) throws IOException {
             return userDAOService.login(user);
-        } catch (DAOException e) {
+        /*} catch (DAOException e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -39,6 +40,6 @@ public class LoginRESTApi extends RESTApi {
                     .status(HttpStatus.UNAUTHORIZED)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{\"message\": \"Wrong password\"}");
-        }
+        } */
     }
 }

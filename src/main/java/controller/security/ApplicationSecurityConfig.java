@@ -1,5 +1,6 @@
 package controller.security;
 
+import controller.security.filter.AuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import service.UserDAOService;
 
 
@@ -33,10 +35,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/swagger-ui/**", "/v3/**").permitAll() //swagger
-                .antMatchers("/auth/registration").permitAll() //auth endpoints
+                .antMatchers("/auth/registration", "/auth/login").permitAll() //auth endpoints
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JwtEmailPasswordAuthenticationFilter(authenticationManagerBean()));
+                .addFilter(new UsernamePasswordAuthenticationFilter())
+                .addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         /* http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

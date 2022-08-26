@@ -30,7 +30,7 @@ public class UserDAOServiceLogin extends UserDAOService{
 
 
 
-    public ResponseEntity<?> login(RequestDto reqDto) throws EmailNotFoundException, DAOException, WrongPasswordException {
+    /* public ResponseEntity<?> login(RequestDto reqDto, String accessToken, String refreshToken) throws EmailNotFoundException, DAOException, WrongPasswordException {
         User user = reqDto.getData();
         String type = reqDto.getType();
         if (!type.equals(RequestType.AUTH.toString())) {
@@ -39,25 +39,19 @@ public class UserDAOServiceLogin extends UserDAOService{
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{\"message\": \"Wrong request type\"}");
         }
-        try {
-            checkUniqueEmail(user.getEmail());
-        } catch (EmailConflictException e) {
-            validatePassword(user);
-            User userFound = userDAO.findByEmail(user.getEmail());
-            int hashCodeToken = userFound.getEmail().hashCode() + userFound.getPassword().hashCode();
-            int usersId = userFound.getId();
-            Token token = new Token(String.valueOf(hashCodeToken), usersId, true);
-            if (tokenDAO.save(token) == null) {
-                throw new DAOException();
-            }
-            EntityModel<User> entityModel = assembler.toModel(userFound);
-            ResponseDto respDto = new ResponseDto();
-            ResponseDto.UserDto userDtoResp = respDto.new UserDto();
-            userDtoResp.transform(entityModel, token);
-            respDto.setData(userDtoResp);
-            respDto.setType(type);
-            return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
+        User userFound = userDAO.findByEmail(user.getEmail());
+        int usersId = userFound.getId();
+        Token accessTokenToken = new Token(accessToken, usersId, true);
+        Token refreshTokenToken = new Token(accessToken, usersId, true);
+        if (tokenDAO.save(token) == null) {
+            throw new DAOException();
         }
-        throw new EmailNotFoundException();
-    }
+        EntityModel<User> entityModel = assembler.toModel(userFound);
+        ResponseDto respDto = new ResponseDto();
+        ResponseDto.UserDto userDtoResp = respDto.new UserDto();
+        userDtoResp.transform(entityModel, token);
+        respDto.setData(userDtoResp);
+        respDto.setType(type);
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
+    } */
 }

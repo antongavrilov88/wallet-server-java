@@ -17,9 +17,9 @@ public class RegistrRESTApi extends RESTApi {
     private final UserDAOServiceRegistr userDAOServiceRegistr;
     private final UserDAOServiceLogin userDAOServiceLogin;
 
-    public RegistrRESTApi(UserDAOServiceRegistr userDAOService, UserDAOServiceLogin userDAOServiceLogin) {
+    public RegistrRESTApi(UserDAOServiceRegistr userDAOService,
+                          UserDAOServiceLogin userDAOServiceLogin) {
         this.userDAOServiceRegistr = userDAOService;
-
         this.userDAOServiceLogin = userDAOServiceLogin;
     }
 

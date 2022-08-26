@@ -18,6 +18,7 @@ import service.dto.RequestDto;
 import service.dto.ResponseDto;
 
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -39,7 +40,8 @@ public class UserController {
 
     @PostMapping(value = "/auth/registration", consumes = {"application/json"}, produces = APPLICATION_JSON_VALUE)
     @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
-    ResponseEntity<?> register(@RequestBody RequestDto user) throws IOException {
+    ResponseEntity<?> register(@RequestBody RequestDto user, HttpServletRequest request) throws IOException {
+        user.setIssuer(request.getRequestURL().toString());
         return registrRESTApi.register(user);
     }
 

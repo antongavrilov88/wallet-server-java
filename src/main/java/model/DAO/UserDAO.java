@@ -1,5 +1,6 @@
 package model.DAO;
 
+import exceptions.DAOException;
 import model.User;
 import model.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,7 +29,6 @@ public class UserDAO {
 
 
     public User findById(int id) {
-        //TODO resolve id type issue
         return repository.findById(id).get();
     }
 
@@ -49,8 +49,12 @@ public class UserDAO {
     }
 
 
-    public void update(User user) {
-        //TODO update
+    public void update(User user) throws DAOException {
+        if (user.getId() != 0) {
+            repository.save(user);
+        } else {
+            throw new DAOException();
+        }
     }
 
     public List<User> findAll() {

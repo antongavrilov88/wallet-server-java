@@ -1,5 +1,7 @@
 package service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import exceptions.DAOException;
 import exceptions.EmailConflictException;
 import exceptions.NotValidEmailException;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 import service.dto.RequestDto;
 import service.dto.ResponseDto;
 import utils.RequestType;
+
+import java.util.Date;
 
 //TODO reconsider classes structure, only one of the UserDAOService may live
 @Component
@@ -41,17 +45,34 @@ public class UserDAOServiceRegistr extends UserDAOService {
         }
         validateEmail(user.getEmail());
         checkUniqueEmail(user.getEmail());
-        Token token;
+        Token accessTokenToken;
+        Token refreshTokenToken;
         User savedUser;
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
         if ((savedUser = userDAO.save(user)) != null) {
             //TODO refactor token creation
-            int hashCodeToken = user.getEmail().hashCode() + user.getPassword().hashCode();
+
+            Algorithm algorithm = Algorithm.HMAC256("dickcheese".getBytes());
+            String accessToken = JWT.create()
+                    .withSubject(savedUser.getEmail())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 1440*60*100000)) // 24h
+                    .withIssuer(reqDto.getIssuer())
+                    .sign(algorithm);
+
+            String refreshToken = JWT.create()
+                    .withSubject(savedUser.getEmail())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 20160*60*100000)) // 2 weeks
+                    .withIssuer(reqDto.getIssuer())
+                    .sign(algorithm);
+
             int userId = savedUser.getId();
-            token = new Token(String.valueOf(hashCodeToken), userId, true);
-            if (tokenDAO.save(token) == null) {
+            accessTokenToken = new Token("Bearer " + accessToken, userId, true);
+            refreshTokenToken = new Token("Bearer " + accessToken, userId, true);
+            if (tokenDAO.save(accessTokenToken) == null || tokenDAO.save(refreshTokenToken) == null) {
                 userDAO.delete(user);
+                tokenDAO.delete(accessTokenToken);
+                tokenDAO.delete(refreshTokenToken);
                 throw new DAOException();
             }
         } else {
@@ -60,7 +81,7 @@ public class UserDAOServiceRegistr extends UserDAOService {
         EntityModel<User> entityModel = assembler.toModel(savedUser);
         ResponseDto respDto = new ResponseDto();
         ResponseDto.UserDto userDtoResp = respDto.new UserDto();
-        userDtoResp.transform(entityModel, token);
+        userDtoResp.transform(entityModel, accessTokenToken, refreshTokenToken);
         respDto.setData(userDtoResp);
         respDto.setType(type);
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);

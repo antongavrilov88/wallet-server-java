@@ -8,7 +8,9 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Links;
 import org.springframework.stereotype.Component;
 
-//TODO delete commented code
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Component
 @Schema
@@ -47,13 +49,12 @@ public class ResponseDto {
         private String email;
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private boolean isAdmin;
-        //@Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
-        // private String pass;
+
 
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private Links links;
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-        private Token rel;
+        private Map<String, Token> rel = new HashMap<>();
 
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private int id;
@@ -61,15 +62,14 @@ public class ResponseDto {
         public UserDto() {
         }
 
-        public void transform(EntityModel<User> user, Token rel) {
-            //TODO refactor this method, use setters
-            this.user = user;
-            this.rel = rel;
-            this.email = user.getContent().getEmail();
-            this.isAdmin = user.getContent().getIsAdmin();
-            // this.pass = user.getContent().getPassword();
-            this.links = user.getLinks();
-            this.id = user.getContent().getId();
+        public void transform(EntityModel<User> user, Token accessToken, Token refreshToken) {
+            setUser(user);
+            setEmail(user.getContent().getEmail());
+            setIsAdmin(user.getContent().getIsAdmin());
+            setLinks(user.getLinks());
+            setId(user.getContent().getId());
+            rel.put("access_token", accessToken);
+            rel.put("refresh_token", refreshToken);
         }
 
 
@@ -81,14 +81,6 @@ public class ResponseDto {
         public void setId(int id) {
             this.id = id;
         }
-
-        /* public String getPassword() {
-            return pass;
-        } */
-
-        /* public void setPassword(String pass) {
-            this.pass = pass;
-        } */
 
         public Links getLinks() {
             return links;
@@ -122,11 +114,11 @@ public class ResponseDto {
             this.user = user;
         }
 
-        public Token getRel() {
+        public Map<String, Token> getRel() {
             return rel;
         }
 
-        public void setRel(Token rel) {
+        public void setRel(Map<String, Token> rel) {
             this.rel = rel;
         }
     }
