@@ -1,36 +1,63 @@
 package service;
 
-import exceptions.EmailConflictException;
-import exceptions.NotValidEmailException;
-import exceptions.WrongPasswordException;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import exceptions.*;
 import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
+import model.Token;
 import model.User;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import service.dto.RequestDto;
+import service.dto.ResponseDto;
+import utils.RequestType;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
-
-public abstract class UserDAOService {
+@Service
+public abstract class UserDAOService implements UserDetailsService {
 
     final UserDAO userDAO;
     final TokenDAO tokenDAO;
     final UserModelAssembler assembler;
-    protected UserDAOService(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler) {
+
+    final BCryptPasswordEncoder passwordEncoder;
+    protected UserDAOService(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
         this.tokenDAO = tokenDAO;
         this.assembler = assembler;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    //TODO all methods in UserDAOService
-    public User findUserByEmail(String email) {
-        return userDAO.findByEmail(email);
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        User user = userDAO.findByEmail(s);
+        //TODO implement roles into API
+        Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 
     public CollectionModel<EntityModel<User>> findAllUsers() {
@@ -57,29 +84,17 @@ public abstract class UserDAOService {
     }
 
     void validatePassword(User user) throws WrongPasswordException {
-        if (!user.getPass().equals(userDAO.findByEmail(user.getEmail()).getPass())) {
-            System.out.println(user.getPass().hashCode());
-            System.out.println(userDAO.findByEmail(user.getEmail()).getPass());
+        if (!passwordEncoder.matches(user.getPassword(), userDAO.findByEmail(user.getEmail()).getPassword())) {
+            System.out.println(passwordEncoder.encode(user.getPassword()));
+            System.out.println(userDAO.findByEmail(user.getEmail()).getPassword());
             throw new WrongPasswordException();
         }
     }
 
-    public User findUserById(Long id) {
-        // return userRepository.findById(id);
-        return null;
+    public User findUserById(int id) {
+        return userDAO.findById(id);
     }
 
-    /* public void saveUser(User user) {
-        userRepository.save(user);
-    }
-
-    // public void deleteUser(User user) {
-        userRepository.delete(user);
-    }
-
-    public void updateUser(User user) {
-        userRepository.save(user);
-    } */
 
 
 }

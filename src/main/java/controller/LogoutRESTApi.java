@@ -16,10 +16,14 @@ import java.io.IOException;
 public class LogoutRESTApi extends RESTApi {
     UserDAOServiceLogout userDAOService;
 
+    public LogoutRESTApi(UserDAOServiceLogout userDAOService) {
+        this.userDAOService = userDAOService;
+    }
+
     @DeleteMapping("auth/logout")
-    public ResponseEntity<?> logout(@RequestParam Token token) throws IOException {
+    public ResponseEntity<?> logout(String accessToken) throws IOException {
         try {
-            userDAOService.logout(token);
+            userDAOService.logout(accessToken);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON).body(null);

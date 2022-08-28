@@ -1,13 +1,12 @@
 package model.DAO;
 
+import exceptions.DAOException;
 import model.User;
 import model.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class UserDAO {
@@ -29,7 +28,7 @@ public class UserDAO {
     }
 
 
-    public User findById(long id) {
+    public User findById(int id) {
         return repository.findById(id).get();
     }
 
@@ -50,8 +49,12 @@ public class UserDAO {
     }
 
 
-    public void update(User user) {
-        //TODO update
+    public void update(User user) throws DAOException {
+        if (user.getId() != 0) {
+            repository.save(user);
+        } else {
+            throw new DAOException();
+        }
     }
 
     public List<User> findAll() {

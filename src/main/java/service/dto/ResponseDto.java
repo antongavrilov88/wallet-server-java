@@ -5,10 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import model.Token;
 import model.User;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
 import org.springframework.stereotype.Component;
 
-//TODO delete commented code
 
 @Component
 @Schema
@@ -47,13 +47,12 @@ public class ResponseDto {
         private String email;
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private boolean isAdmin;
-        //@Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
-        // private String pass;
+
 
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-        private Links links;
+        private MyLinks links;
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-        private Token rel;
+        private MyRels rel;
 
         @Schema(accessMode = Schema.AccessMode.READ_ONLY)
         private int id;
@@ -61,15 +60,13 @@ public class ResponseDto {
         public UserDto() {
         }
 
-        public void transform(EntityModel<User> user, Token rel) {
-            //TODO refactor this method, use setters
-            this.user = user;
-            this.rel = rel;
-            this.email = user.getContent().getEmail();
-            this.isAdmin = user.getContent().getIsAdmin();
-            // this.pass = user.getContent().getPass();
-            this.links = user.getLinks();
-            this.id = user.getContent().getId();
+        public void transform(EntityModel<User> user, Token accessToken, Token refreshToken) {
+            setUser(user);
+            setEmail(user.getContent().getEmail());
+            setIsAdmin(user.getContent().getIsAdmin());
+            setLinks(user.getLinks());
+            setId(user.getContent().getId());
+            rel = new MyRels(accessToken, refreshToken);
         }
 
 
@@ -82,20 +79,18 @@ public class ResponseDto {
             this.id = id;
         }
 
-        /* public String getPass() {
-            return pass;
-        } */
-
-        /* public void setPass(String pass) {
-            this.pass = pass;
-        } */
-
-        public Links getLinks() {
+        public MyLinks getLinks() {
             return links;
         }
 
         public void setLinks(Links links) {
-            this.links = links;
+            String[] array = new String[2];
+            int i = 0;
+            for (Link link : links) {
+                array[i] = link.toUri().toString();
+                i++;
+            }
+            this.links = new MyLinks(array[0], array[1]);
         }
 
         public String getEmail() {
@@ -122,12 +117,64 @@ public class ResponseDto {
             this.user = user;
         }
 
-        public Token getRel() {
+        public MyRels getRel() {
             return rel;
         }
 
-        public void setRel(Token rel) {
+        public void setRel(MyRels rel) {
             this.rel = rel;
+        }
+    }
+
+    public class MyLinks {
+        String self;
+        String resource;
+
+        public MyLinks(String self, String recourse) {
+            this.self = self;
+            this.resource = recourse;
+        }
+
+        public String getSelf() {
+            return self;
+        }
+
+        public void setSelf(String self) {
+            this.self = self;
+        }
+
+        public String getResource() {
+            return resource;
+        }
+
+        public void setResource(String resource) {
+            this.resource = resource;
+        }
+    }
+
+    public class MyRels {
+        Token access_token;
+        Token refresh_token;
+
+        public MyRels(Token accessToken, Token refreshToken) {
+            this.access_token = accessToken;
+            this.refresh_token = refreshToken;
+        }
+
+        public Token getAccess_token() {
+            return access_token;
+        }
+
+        public void setAccess_token(Token access_token) {
+            this.access_token = access_token;
+        }
+
+        public Token getRefresh_token() {
+            return refresh_token;
+        }
+
+        public void setRefresh_token(Token refresh_token) {
+            this.refresh_token = refresh_token;
         }
     }
 }
