@@ -1,7 +1,6 @@
 package service;
 
-import controller.UserController;
-import model.DAO.UserDAO;
+import controller.AuthController;
 import model.User;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -16,8 +15,8 @@ public class UserModelAssembler implements RepresentationModelAssembler<User, En
     @Override
     public EntityModel<User> toModel(User entity) {
         return EntityModel.of(entity,
-                linkTo(methodOn(UserController.class).one(entity.getId())).withSelfRel(),
-                linkTo(methodOn(UserController.class).all()).withRel("users"));
+                linkTo(methodOn(AuthController.class).one(entity.getId())).withSelfRel(),
+                linkTo(methodOn(AuthController.class).all()).withRel("users"));
     }
 
     @Override
