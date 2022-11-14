@@ -6,13 +6,14 @@ import model.DAO.UserDAO;
 import model.Token;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import service.dto.UserEntitylAssembler;
 
 @Component
 public class UserDAOServiceLogout extends UserDAOService {
 
     private TokenDAO tokenDAO;
-    public UserDAOServiceLogout(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
-        super(userDAO, tokenDAO, assembler, passwordEncoder);
+    public UserDAOServiceLogout(UserDAO userDAO, TokenDAO tokenDAO, UserEntitylAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
+        super(userDAO, tokenDAO, assembler);
         this.tokenDAO = tokenDAO;
     }
 

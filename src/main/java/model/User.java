@@ -20,8 +20,6 @@ import java.util.*;
 public class User implements Serializable {
 
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)

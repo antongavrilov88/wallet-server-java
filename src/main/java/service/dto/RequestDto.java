@@ -5,9 +5,9 @@ import model.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RequestDto {
+public class RequestDto<T> {
     String type;
-    User data;
+    T data;
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     String issuer;
@@ -23,11 +23,11 @@ public class RequestDto {
         this.type = type;
     }
 
-    public User getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(User data) {
+    public void setData(T data) {
         this.data = data;
     }
 

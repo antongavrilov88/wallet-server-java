@@ -7,15 +7,13 @@ import model.DAO.TokenDAO;
 import model.DAO.UserDAO;
 import model.Token;
 import model.User;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import service.dto.RequestDto;
-import service.dto.ResponseDto;
+import service.dto.UserEntitylAssembler;
 import utils.RequestType;
 
 import java.util.Date;
@@ -23,16 +21,16 @@ import java.util.Date;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @Component
 public class UserDAOServiceLogin extends UserDAOService{
-        public UserDAOServiceLogin(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
-        super(userDAO, tokenDAO, assembler, passwordEncoder);
+        public UserDAOServiceLogin(UserDAO userDAO, TokenDAO tokenDAO, UserEntitylAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
+        super(userDAO, tokenDAO, assembler);
     }
 
 
 
 
-    public ResponseEntity<?> login(RequestDto requestDto) throws WrongPasswordException, NotValidEmailException {
-        validateEmail(requestDto.getData().getEmail());
-        validatePassword(requestDto.getData());
+    public ResponseEntity<?> login(RequestDto<User> requestDto) throws WrongPasswordException, NotValidEmailException {
+        //validateEmail(requestDto.getData().getEmail());
+        //validatePassword(requestDto.getData());
         User user = requestDto.getData();
         String type = requestDto.getType();
         String issuer = requestDto.getIssuer();
@@ -65,12 +63,13 @@ public class UserDAOServiceLogin extends UserDAOService{
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{\"message\": \"Internal server error\"}");
         }
-        EntityModel<User> entityModel = assembler.toModel(userFound);
-        ResponseDto respDto = new ResponseDto();
-        ResponseDto.UserDto userDtoResp = respDto.new UserDto();
-        userDtoResp.transform(entityModel, accessTokenToken, refreshTokenToken);
-        respDto.setData(userDtoResp);
-        respDto.setType(type);
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
+//        EntityModel<User> entityModel = assembler.toModel(userFound);
+//        ResponseDto respDto = new ResponseDto();
+//        ResponseDto.UserDto userDtoResp = respDto.new UserDto();
+//        userDtoResp.transform(entityModel, accessTokenToken, refreshTokenToken);
+//        respDto.setData(userDtoResp);
+//        respDto.setType(type);
+//        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
+        return null;
     }
 }

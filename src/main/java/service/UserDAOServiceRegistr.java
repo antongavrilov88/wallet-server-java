@@ -10,15 +10,15 @@ import model.DAO.UserDAO;
 import model.Token;
 import model.User;
 import org.springframework.context.annotation.Primary;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import service.dto.EntityDto;
 import service.dto.RequestDto;
 import service.dto.ResponseDto;
+import service.dto.UserEntitylAssembler;
 import utils.RequestType;
 
 import java.util.Date;
@@ -30,11 +30,11 @@ public class UserDAOServiceRegistr extends UserDAOService {
 
 
 
-    public UserDAOServiceRegistr(UserDAO userDAO, TokenDAO tokenDAO, UserModelAssembler assembler, BCryptPasswordEncoder passwordEncoder) {
-        super(userDAO, tokenDAO, assembler, passwordEncoder);
+    public UserDAOServiceRegistr(UserDAO userDAO, TokenDAO tokenDAO, UserEntitylAssembler assembler) {
+        super(userDAO, tokenDAO, assembler);
     }
 
-    public ResponseEntity<?> register(RequestDto reqDto) throws EmailConflictException, DAOException, NotValidEmailException {
+    public ResponseEntity<?> register(RequestDto<User> reqDto) throws EmailConflictException, DAOException, NotValidEmailException {
         User user = reqDto.getData();
         String type = reqDto.getType();
         if (!type.equals(RequestType.AUTH.toString())) {
@@ -43,12 +43,12 @@ public class UserDAOServiceRegistr extends UserDAOService {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{\"message\": \"Wrong request type\"}");
         }
-        validateEmail(user.getEmail());
-        checkUniqueEmail(user.getEmail());
+        userDAO.validateEmail(user.getEmail());
+        userDAO.checkUniqueEmail(user.getEmail());
         Token accessTokenToken;
         Token refreshTokenToken;
         User savedUser;
-        String password = passwordEncoder.encode(user.getPassword());
+        String password = userDAO.getPasswordEncoder().encode(user.getPassword());
         user.setPassword(password);
         if ((savedUser = userDAO.save(user)) != null) {
             Algorithm algorithm = Algorithm.HMAC256("dickcheese".getBytes());
@@ -76,13 +76,11 @@ public class UserDAOServiceRegistr extends UserDAOService {
         } else {
             throw new DAOException();
         }
-        EntityModel<User> entityModel = assembler.toModel(savedUser);
-        ResponseDto respDto = new ResponseDto();
-        ResponseDto.UserDto userDtoResp = respDto.new UserDto();
-        userDtoResp.transform(entityModel, accessTokenToken, refreshTokenToken);
-        respDto.setData(userDtoResp);
+        EntityDto<User> entityDto = assembler.toModel(savedUser, accessTokenToken, refreshTokenToken);
+        ResponseDto<User> respDto = new ResponseDto();
+        respDto.setData(entityDto);
         respDto.setType(type);
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
+        return ResponseEntity.created(entityDto.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(respDto);
     }
 
 
